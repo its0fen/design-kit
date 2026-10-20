@@ -1,4 +1,3 @@
-import DesignKitCore
 import Foundation
 
 /// The appearance setting: follow the system, or force light or dark for every window of the app. Stored in
