@@ -22,9 +22,10 @@ struct PackageSourceTests {
 
     static func offenders(in directory: URL) -> [String] {
         swiftFiles(in: directory).flatMap { file -> [String] in
-            let text = ((try? String(contentsOf: file, encoding: .utf8)) ?? "").lowercased()
+            let original = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+            let text = original.lowercased()
             let words = forbiddenWords.filter { text.contains($0.lowercased()) }
-            let paths = text.contains(forbiddenMachinePath) ? [forbiddenMachinePath] : []
+            let paths = original.contains(forbiddenMachinePath) ? [forbiddenMachinePath] : []
             return (words + paths).map { "\(file.lastPathComponent): \($0)" }
         }.sorted()
     }
