@@ -36,7 +36,7 @@ let package = Package(
         // Deliberately an executable rather than a .testTarget — see Tests/DesignKitTests/TestRunner.swift.
         .executableTarget(
             name: "DesignKitTests",
-            dependencies: ["DesignKitCore"],
+            dependencies: ["DesignKitCore", "DesignKitUI"],
             path: "Tests/DesignKitTests",
             swiftSettings: testingSwiftSettings,
             linkerSettings: testingLinkerSettings
