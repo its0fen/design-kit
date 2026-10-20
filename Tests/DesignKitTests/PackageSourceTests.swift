@@ -7,6 +7,9 @@ struct PackageSourceTests {
         "ReviewCore", "FinanzbuchhaltungApp", "Notwendigkeit", "Kategorie", "Fixkosten", "Konto", "Gegenpartei", "cents",
     ]
 
+    /// A path into a person's home folder in a string literal ties the package to one machine.
+    static let forbiddenMachinePath = "\"/Users/"
+
     private static var sourcesDirectory: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
             .appendingPathComponent("Sources", isDirectory: true)
@@ -20,12 +23,23 @@ struct PackageSourceTests {
     static func offenders(in directory: URL) -> [String] {
         swiftFiles(in: directory).flatMap { file -> [String] in
             let text = ((try? String(contentsOf: file, encoding: .utf8)) ?? "").lowercased()
-            return forbiddenWords.filter { text.contains($0.lowercased()) }.map { "\(file.lastPathComponent): \($0)" }
+            let words = forbiddenWords.filter { text.contains($0.lowercased()) }
+            let paths = text.contains(forbiddenMachinePath) ? [forbiddenMachinePath] : []
+            return (words + paths).map { "\(file.lastPathComponent): \($0)" }
         }.sorted()
     }
 
     @Test func noSourceFileNamesADomainWordOrAnApplicationModule() {
         #expect(Self.offenders(in: Self.sourcesDirectory) == [])
+    }
+
+    @Test func aPlantedHomeFolderIsReported() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data("let folder = \"/Users/someone/Git\"\n".utf8).write(to: directory.appendingPathComponent("Planted.swift"))
+
+        #expect(Self.offenders(in: directory) == ["Planted.swift: \"/Users/"])
     }
 
     @Test func theSourcesDirectoryIsActuallyScanned() {

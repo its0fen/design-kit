@@ -10,7 +10,7 @@ Colors and appearance for SwiftUI apps on macOS 14+, with no knowledge of any ap
 ## Use
 
 ```swift
-.package(url: "https://github.com/its0fen/design-kit.git", exact: "0.1.0")
+.package(url: "https://github.com/its0fen/design-kit.git", exact: "0.4.1")
 ```
 
 Add `DesignKitCore` and/or `DesignKitUI` to the target's dependencies.
