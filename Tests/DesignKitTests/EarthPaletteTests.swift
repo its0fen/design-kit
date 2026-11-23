@@ -61,3 +61,28 @@ struct EarthPaletteTests {
         }
     }
 }
+
+@Suite("Names of the package's own colors")
+struct ColorNameTests {
+    /// Only the palettes' colors are named for a person to read; every other name is the package's own, in English.
+    private static let internalNames =
+        Emphasis.all.map(\.name)
+        + StatusTone.allCases.map { EarthPalette.status($0).name }
+        + EarthPalette.sequentialRamp.map(\.name)
+        + [EarthPalette.cardSurface, EarthPalette.pageBackground, EarthPalette.unassignedTag].map(\.name)
+
+    @Test func everyInternalNameIsPlainAscii() {
+        #expect(Self.internalNames.allSatisfy { name in name.unicodeScalars.allSatisfy(\.isASCII) })
+    }
+
+    @Test func everyInternalNameIsUnique() {
+        #expect(Set(Self.internalNames).count == Self.internalNames.count)
+    }
+
+    @Test func everyStatusToneHasItsOwnColor() {
+        let colors = StatusTone.allCases.map(EarthPalette.status)
+        for (index, color) in colors.enumerated() {
+            #expect(!colors[(index + 1)...].contains { $0.light == color.light }, "\(color.name)")
+        }
+    }
+}

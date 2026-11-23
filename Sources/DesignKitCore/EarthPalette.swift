@@ -4,8 +4,8 @@ import Foundation
 /// because earth hues alone sit too close together.
 public enum EarthPalette {
     /// GroupBox fill as rendered on macOS 14+, the surface every series color and chart sits on.
-    public static let cardSurface = AdaptiveColor("Karte", light: "F8F8F8", dark: "2F3131")
-    public static let pageBackground = AdaptiveColor("Seite", light: "FFFFFF", dark: "262728")
+    public static let cardSurface = AdaptiveColor("card surface", light: "F8F8F8", dark: "2F3131")
+    public static let pageBackground = AdaptiveColor("page background", light: "FFFFFF", dark: "262728")
 
     /// Interleaved warm/cool, so a short list still spreads across the wheel.
     public static let tagColors: [AdaptiveColor] = [
@@ -27,7 +27,7 @@ public enum EarthPalette {
     ]
 
     /// For an item beyond the palette or without a color of its own: never another item's color.
-    public static let unassignedTag = AdaptiveColor("Ohne Farbe", light: "8A8A8A", dark: "7A7A7A")
+    public static let unassignedTag = AdaptiveColor("unassigned", light: "8A8A8A", dark: "7A7A7A")
 
     /// Two lines in one chart: Petrol and Ocker, cool against warm and apart in lightness too.
     public static let seriesColors: [AdaptiveColor] = [tagColors[0], tagColors[4]]
@@ -35,10 +35,10 @@ public enum EarthPalette {
     /// Ranked steps from weakest to strongest in one hue, so the order reads without a legend; neighbours differ in
     /// lightness alone, which red-green deficiency leaves intact. In the dark appearance stronger is lighter.
     public static let sequentialRamp: [AdaptiveColor] = [
-        AdaptiveColor("Stufe 1", light: "508A99", dark: "508A99"),
-        AdaptiveColor("Stufe 2", light: "316D7A", dark: "6EA9B8"),
-        AdaptiveColor("Stufe 3", light: "0F505D", dark: "8DC9D8"),
-        AdaptiveColor("Stufe 4", light: "003542", dark: "C0EEFA"),
+        AdaptiveColor("Step 1", light: "508A99", dark: "508A99"),
+        AdaptiveColor("Step 2", light: "316D7A", dark: "6EA9B8"),
+        AdaptiveColor("Step 3", light: "0F505D", dark: "8DC9D8"),
+        AdaptiveColor("Step 4", light: "003542", dark: "C0EEFA"),
     ]
 
     /// `intensity` is a rank over the highest rank (0...1); outside that range it stays on the ramp's ends.
@@ -47,12 +47,17 @@ public enum EarthPalette {
         return sequentialRamp[min(max(rank, 0), sequentialRamp.count - 1)]
     }
 
+    private static let positive = AdaptiveColor("positive", light: "357A43", dark: "96E4A1")
+    private static let negative = AdaptiveColor("negative", light: "862723", dark: "EB827B")
+    private static let warning = AdaptiveColor("warning", light: "9C5906", dark: "F2B458")
+    private static let neutral = AdaptiveColor("neutral", light: "696969", dark: "ABABAB")
+
     public static func status(_ tone: StatusTone) -> AdaptiveColor {
         switch tone {
-        case .positive: AdaptiveColor("Positiv", light: "357A43", dark: "96E4A1")
-        case .negative: AdaptiveColor("Negativ", light: "862723", dark: "EB827B")
-        case .warning: AdaptiveColor("Warnung", light: "9C5906", dark: "F2B458")
-        case .neutral: AdaptiveColor("Neutral", light: "696969", dark: "ABABAB")
+        case .positive: positive
+        case .negative: negative
+        case .warning: warning
+        case .neutral: neutral
         }
     }
 }

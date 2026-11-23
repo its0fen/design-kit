@@ -7,6 +7,9 @@ struct PackageSourceTests {
         "ReviewCore", "FinanzbuchhaltungApp", "Notwendigkeit", "Kategorie", "Fixkosten", "Konto", "Gegenpartei", "cents",
     ]
 
+    /// Words caught only where a word starts, since they also end ordinary words ("Graustufen" names a palette).
+    static let forbiddenWordStarts = ["Stufe"]
+
     /// A path into a person's home folder in a string literal ties the package to one machine.
     static let forbiddenMachinePath = "\"/Users/"
 
@@ -25,6 +28,7 @@ struct PackageSourceTests {
             let original = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
             let text = original.lowercased()
             let words = forbiddenWords.filter { text.contains($0.lowercased()) }
+                + forbiddenWordStarts.filter { original.range(of: "\\b\($0)", options: [.regularExpression, .caseInsensitive]) != nil }
             let paths = original.contains(forbiddenMachinePath) ? [forbiddenMachinePath] : []
             return (words + paths).map { "\(file.lastPathComponent): \($0)" }
         }.sorted()
@@ -55,5 +59,15 @@ struct PackageSourceTests {
         try Data("import ReviewCore\nlet total: Int = amountCents\n".utf8).write(to: directory.appendingPathComponent("Planted.swift"))
 
         #expect(Self.offenders(in: directory) == ["Planted.swift: ReviewCore", "Planted.swift: cents"])
+    }
+
+    @Test func aPlantedWordStartIsReportedButNotInsideAnotherWord() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data("let ramp = \"Stufe 1\"\n".utf8).write(to: directory.appendingPathComponent("Planted.swift"))
+        try Data("let palette = \"Graustufen\"\n".utf8).write(to: directory.appendingPathComponent("Palette.swift"))
+
+        #expect(Self.offenders(in: directory) == ["Planted.swift: Stufe"])
     }
 }

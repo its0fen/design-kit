@@ -96,7 +96,12 @@ struct EmphasisTests {
     }
 
     @Test func everyEmphasisIsTranslucent() {
-        #expect((Emphasis.all.map(\.opacity) + [Emphasis.toneFillOpacity]).allSatisfy { $0 > 0 && $0 < 1 })
+        #expect((Emphasis.all.map(\.opacity) + [Emphasis.toneFillOpacity, Emphasis.dimmedOpacity]).allSatisfy { $0 > 0 && $0 < 1 })
+    }
+
+    /// A dimmed segment steps back but stays recognizable by its hue, so it keeps clearly more than a tone's background.
+    @Test func aDimmedSegmentStaysStrongerThanAToneBackground() {
+        #expect(Emphasis.dimmedOpacity > Emphasis.toneFillOpacity)
     }
 
     @Test func aSelectionIsStrongerThanAHighlightOnTheSameBase() {
