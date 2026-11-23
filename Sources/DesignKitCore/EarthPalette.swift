@@ -29,6 +29,24 @@ public enum EarthPalette {
     /// For an item beyond the palette or without a color of its own: never another item's color.
     public static let unassignedTag = AdaptiveColor("Ohne Farbe", light: "8A8A8A", dark: "7A7A7A")
 
+    /// Two lines in one chart: Petrol and Ocker, cool against warm and apart in lightness too.
+    public static let seriesColors: [AdaptiveColor] = [tagColors[0], tagColors[4]]
+
+    /// Ranked steps from weakest to strongest in one hue, so the order reads without a legend; neighbours differ in
+    /// lightness alone, which red-green deficiency leaves intact. In the dark appearance stronger is lighter.
+    public static let sequentialRamp: [AdaptiveColor] = [
+        AdaptiveColor("Stufe 1", light: "508A99", dark: "508A99"),
+        AdaptiveColor("Stufe 2", light: "316D7A", dark: "6EA9B8"),
+        AdaptiveColor("Stufe 3", light: "0F505D", dark: "8DC9D8"),
+        AdaptiveColor("Stufe 4", light: "003542", dark: "C0EEFA"),
+    ]
+
+    /// `intensity` is a rank over the highest rank (0...1); outside that range it stays on the ramp's ends.
+    public static func sequentialColor(intensity: Double) -> AdaptiveColor {
+        let rank = Int((intensity * Double(sequentialRamp.count)).rounded()) - 1
+        return sequentialRamp[min(max(rank, 0), sequentialRamp.count - 1)]
+    }
+
     public static func status(_ tone: StatusTone) -> AdaptiveColor {
         switch tone {
         case .positive: AdaptiveColor("Positiv", light: "357A43", dark: "96E4A1")

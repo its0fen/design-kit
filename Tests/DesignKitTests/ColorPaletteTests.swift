@@ -3,9 +3,6 @@ import Testing
 
 import DesignKitCore
 
-/// A fill that is told from the card at all; the palettes other than Earth are chosen for their look.
-private let minimumVisibleContrast = 1.3
-
 @Suite("Color palettes")
 struct ColorPaletteTests {
     @Test func theFourPalettesAreOfferedWithEarthFirst() {
@@ -21,7 +18,7 @@ struct ColorPaletteTests {
     func everyColorCanBeSeenOnACard(palette: ColorPalette, appearance: PaletteAppearance) {
         let card = EarthPalette.cardSurface.resolved(for: appearance)
         for color in palette.colors {
-            #expect(ColorMath.contrastRatio(color.resolved(for: appearance), card) >= minimumVisibleContrast, "\(color.name)")
+            #expect(ColorMath.contrastRatio(color.resolved(for: appearance), card) >= ColorThresholds.visibleContrast, "\(color.name)")
         }
     }
 
@@ -39,7 +36,7 @@ struct ColorPaletteTests {
 
     @Test func aPickedDarkColorIsLiftedUntilItStandsOutOnTheDarkCard() throws {
         let color = try #require(AdaptiveColor(pickedHex: "#101010"))
-        #expect(ColorMath.contrastRatio(color.dark, EarthPalette.cardSurface.dark) >= 3)
+        #expect(ColorMath.contrastRatio(color.dark, EarthPalette.cardSurface.dark) >= ColorThresholds.nonTextContrast)
     }
 
     @Test func aPickedLightColorStaysAsItIsInDarkMode() throws {
